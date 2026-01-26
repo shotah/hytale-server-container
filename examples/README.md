@@ -22,6 +22,6 @@ docker-compose up
 ## Finding Your Player UUID
 
 To whitelist players or grant OP, you need their UUID. You can find it:
-1. In the server logs when they connect
-2. From [mcuuid.net](https://mcuuid.net/) (for Minecraft, Hytale UUIDs may differ)
+1. From [hytaleid.com](https://hytaleid.com/) - lookup by username
+2. In the server logs when they connect
 3. In the `permissions.json` file after they've connected once

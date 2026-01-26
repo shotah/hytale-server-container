@@ -2,6 +2,8 @@
 #
 # A password-protected server with whitelist enabled.
 # Only approved players can join.
+#
+# Find player UUIDs at: https://hytaleid.com/
 
 services:
   hytale:

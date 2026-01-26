@@ -148,6 +148,10 @@ These variables manage player access and permissions via JSON configuration file
 - **Non-destructive:** Environment variables add to existing configs, never remove entries
 - **Validation:** Invalid JSON files are backed up and recreated with defaults
 
+### Finding Player UUIDs
+
+Use [hytaleid.com](https://hytaleid.com/) to look up player UUIDs by username, or check your server's `permissions.json` after they've connected once.
+
 ### Example: Private Server
 
 ```yaml
