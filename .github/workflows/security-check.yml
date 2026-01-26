@@ -14,9 +14,6 @@ jobs:
     permissions:
       security-events: write
       contents: read
-    strategy:
-      matrix:
-        dockerfile: [Dockerfile.alpine, Dockerfile.ubuntu, Dockerfile.alpine-liberica]
 
     steps:
       - name: Checkout code
@@ -29,17 +26,17 @@ jobs:
 
       - name: Lint Dockerfile (SARIF + console)
         run: |
-          echo "Linting ${{ matrix.dockerfile }}..."
+          echo "Linting Dockerfile..."
           # Output SARIF for GitHub Code Scanning
-          hadolint "${{ matrix.dockerfile }}" --no-fail -f sarif > "sarif-${{ matrix.dockerfile }}.sarif" || true
+          hadolint Dockerfile --no-fail -f sarif > sarif-Dockerfile.sarif || true
           # Also print warnings/errors in console for visibility
-          hadolint "${{ matrix.dockerfile }}" || true
+          hadolint Dockerfile || true
 
       - name: Upload Hadolint SARIF
         uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
-          sarif_file: "sarif-${{ matrix.dockerfile }}.sarif"
+          sarif_file: sarif-Dockerfile.sarif
           category: hadolint
 
   trivy:
