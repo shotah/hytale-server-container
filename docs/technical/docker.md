@@ -26,7 +26,12 @@ The Hytale server container is highly configurable through environment variables
 
 | Variable                      | Description                                                                                             | Default    |
 |-------------------------------|---------------------------------------------------------------------------------------------------------|------------|
-| `HYTALE_PATCHLINE`            | Patchline to download from: `release` or `prerelease`                                                   | `release`  |
+| `HYTALE_PATCHLINE`            | Patchline to download from: `release` or `pre-release`                                                  | `release`  |
+
+See the [pre-release example](https://github.com/shotah/hytale-server-container/tree/main/examples/pre-release) for running a pre-release server.
+
+---
+
 ## 📦 CurseForge Mod Downloader
 
 Automatically download and manage mods from CurseForge.
@@ -57,6 +62,8 @@ environment:
 The mod ID can be found in the CurseForge URL. For example:
 - URL: `https://www.curseforge.com/hytale/mods/example-mod/12345`
 - Mod ID: `12345`
+
+See the [curseforge-mods example](https://github.com/shotah/hytale-server-container/tree/main/examples/curseforge-mods) for a complete configuration.
 
 ---
 
@@ -121,6 +128,37 @@ These variables directly inject values into the `home/container/config.json` fil
 | `HYTALE_COMPRESSION` | Enable or disable local network compression. | `false` |
 | `HYTALE_WORLD` | The name of the world folder to load. | `default` |
 | `HYTALE_GAMEMODE` | The default game mode (e.g., Adventure, Creative). | `Adventure` |
+
+---
+
+## 🔐 Access Control (whitelist.json, permissions.json)
+
+These variables manage player access and permissions via JSON configuration files.
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `HYTALE_WHITELIST_ENABLED` | Enable whitelist mode (`true` or `false`). | `false` |
+| `HYTALE_WHITELIST` | Comma-separated player UUIDs to add to whitelist. | `(Empty)` |
+| `HYTALE_OPS` | Comma-separated player UUIDs to grant OP permissions. | `(Empty)` |
+
+### How Access Control Works
+
+- **Whitelist:** When enabled, only players in `whitelist.json` can join
+- **Permissions:** Players in `HYTALE_OPS` are added to the "OP" group in `permissions.json`
+- **Non-destructive:** Environment variables add to existing configs, never remove entries
+- **Validation:** Invalid JSON files are backed up and recreated with defaults
+
+### Example: Private Server
+
+```yaml
+environment:
+  HYTALE_PASSWORD: "secret123"
+  HYTALE_WHITELIST_ENABLED: "true"
+  HYTALE_WHITELIST: "uuid-player1,uuid-player2"
+  HYTALE_OPS: "uuid-admin"
+```
+
+See the [private-server example](https://github.com/shotah/hytale-server-container/tree/main/examples/private-server) for a complete configuration.
 
 ---
 

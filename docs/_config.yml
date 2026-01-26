@@ -13,14 +13,13 @@ remote_theme: just-the-docs/just-the-docs
 color_scheme: dark # Perfect for gaming/server projects
 
 # URL settings
-# Replace 'deinfreu' with your GitHub username if different
 baseurl: "/hytale-server-container" 
-url: "https://deinfreu.github.io/hytale-server-container/"
+url: "https://shotah.github.io/hytale-server-container/"
 permalink: pretty
 
 # Aux links (Top right buttons)
 aux_links:
   "GitHub":
-    - "https://github.com/deinfreu/hytale-server-container"
+    - "https://github.com/shotah/hytale-server-container"
   "Docker Hub":
-    - "https://hub.docker.com/r/deinfreu/hytale-server" # Update if different
+    - "https://hub.docker.com/r/shotah/hytale-server"

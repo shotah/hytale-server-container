@@ -36,29 +36,25 @@ docker run \
   --name hytale-server \
   -e SERVER_IP="0.0.0.0" \
   -e SERVER_PORT="5520" \
-  -e PROD="FALSE" \
-  -e DEBUG="FALSE" \
   -e TZ="UTC" \
   -p 5520:5520/udp \
   -v "hytale-server:/home/container" \
   -v "/etc/machine-id:/etc/machine-id:ro" \
   --restart unless-stopped \
   -t -i \
-  shotah/hytale-server:experimental-alpine
+  shotah/hytale-server:alpine
 ```
 
-Alternatively, you can deploy using Docker Compose. Use the configuration below or explore the [examples](https://github.com/shotah/hytale-server-container/tree/main/examples) folder for more advanced templates.
+Alternatively, you can deploy using Docker Compose:
 
 ```yaml
 services:
   hytale:
-    image: shotah/hytale-server:experimental-alpine
+    image: shotah/hytale-server:alpine
     container_name: hytale-server
     environment:
       SERVER_IP: "0.0.0.0"
       SERVER_PORT: "5520"
-      PROD: "FALSE"
-      DEBUG: "FALSE"
       TZ: "UTC"
     restart: unless-stopped
     ports:
@@ -70,30 +66,48 @@ services:
     stdin_open: true
 ```
 
+## 📚 Examples
+
+Ready-to-use Docker Compose configurations for common setups:
+
+| Example | Description |
+|---------|-------------|
+| [Basic Server](examples/docker-compose/) | Minimal configuration to get started |
+| [CurseForge Mods](examples/curseforge-mods/) | Auto-download mods from CurseForge |
+| [Pre-release](examples/pre-release/) | Run the latest pre-release server |
+| [Private Server](examples/private-server/) | Password + whitelist protected |
+| [Full-Featured](examples/full-featured/) | All environment variables documented |
+
+Browse all examples in the [examples folder](examples/).
+
 ## 🎮 Pre-release Server
 
-To run a pre-release version of the Hytale server, set the `HYTALE_PATCHLINE` environment variable:
+Run the latest pre-release version by setting `HYTALE_PATCHLINE`:
 
 ```yaml
 environment:
   HYTALE_PATCHLINE: "pre-release"  # Options: "release" (default), "pre-release"
 ```
 
+See the [pre-release example](examples/pre-release/) for a complete configuration.
+
 ## 📦 CurseForge Mod Support
 
-Automatically download mods from CurseForge on startup using the `CURSEFORGE_MOD_IDS` environment variable:
+Automatically download mods from CurseForge on startup:
 
 ```yaml
 environment:
   CURSEFORGE_MOD_IDS: "1423494,1430352"  # Comma-separated mod project IDs
 ```
 
-Find mod IDs in the CurseForge URL: `https://www.curseforge.com/hytale/mods/mod-name/12345` → ID is `12345`
+Find mod IDs in the CurseForge URL: `curseforge.com/hytale/mods/mod-name/12345` → ID is `12345`
 
 The downloader:
 - Fetches the latest version automatically
 - Tracks installed mods via manifest
 - Cleans up removed mods on restart
+
+See the [curseforge-mods example](examples/curseforge-mods/) for a complete configuration.
 
 ## ⚙️ Environment Variables
 
@@ -130,6 +144,8 @@ These environment variables override settings in `config.json`:
 | `HYTALE_WHITELIST` | *(empty)* | Comma-separated player UUIDs to whitelist |
 | `HYTALE_OPS` | *(empty)* | Comma-separated player UUIDs to grant OP |
 
+See the [private-server example](examples/private-server/) for a complete whitelist + password configuration.
+
 ### Patchline & Mods
 
 | Variable | Default | Description |
@@ -137,6 +153,8 @@ These environment variables override settings in `config.json`:
 | `HYTALE_PATCHLINE` | `release` | Server version: `release` or `pre-release` |
 | `CURSEFORGE_MOD_IDS` | *(empty)* | Comma-separated CurseForge mod project IDs |
 | `HYTALE_MOD_DIR` | `/home/container/mods` | Directory for mods |
+
+For a complete example with all environment variables, see [full-featured](examples/full-featured/).
 
 ### Volume Mounts
 
@@ -203,4 +221,13 @@ This project is a fork of the excellent work by **[deinfreu](https://github.com/
 - **Original Repository:** [deinfreu/hytale-server-container](https://github.com/deinfreu/hytale-server-container)
 - **Original Author:** [@deinfreu](https://github.com/deinfreu)
 
-Thank you to deinfreu and all the [original contributors](https://github.com/deinfreu/hytale-server-container/graphs/contributors) for building the foundation of this container. This fork adds additional features like pre-release server support (`HYTALE_PATCHLINE`) and CurseForge mod downloading (`CURSEFORGE_MOD_IDS`).
+Thank you to deinfreu and all the [original contributors](https://github.com/deinfreu/hytale-server-container/graphs/contributors) for building the foundation of this container.
+
+### What's New in This Fork
+
+- Pre-release server support (`HYTALE_PATCHLINE`)
+- CurseForge mod downloading (`CURSEFORGE_MOD_IDS`)
+- Server config via environment variables (`HYTALE_SERVER_NAME`, `HYTALE_PASSWORD`, etc.)
+- Whitelist and permissions management (`HYTALE_WHITELIST`, `HYTALE_OPS`)
+- Version tracking with automatic updates
+- Ready-to-use [examples](examples/) for common setups

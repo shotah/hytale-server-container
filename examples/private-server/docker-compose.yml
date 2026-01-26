@@ -1,0 +1,38 @@
+# Private Hytale Server
+#
+# A password-protected server with whitelist enabled.
+# Only approved players can join.
+
+services:
+  hytale:
+    image: shotah/hytale-server:alpine
+    container_name: hytale-server-private
+    environment:
+      SERVER_IP: "0.0.0.0"
+      SERVER_PORT: "5520"
+      TZ: "UTC"
+      
+      # Server identity
+      HYTALE_SERVER_NAME: "Private Friends Server"
+      HYTALE_MOTD: "Invite only!"
+      
+      # Password protection
+      HYTALE_PASSWORD: "your-secret-password"
+      
+      # Whitelist - only these players can join
+      HYTALE_WHITELIST_ENABLED: "true"
+      HYTALE_WHITELIST: "player1-uuid,player2-uuid,player3-uuid"
+      
+      # Operators - these players have admin powers
+      HYTALE_OPS: "admin-uuid"
+      
+      HYTALE_MAX_PLAYERS: "10"
+      
+    restart: unless-stopped
+    ports:
+      - "5520:5520/udp"
+    volumes:
+      - ./data:/home/container
+      - /etc/machine-id:/etc/machine-id:ro
+    tty: true
+    stdin_open: true

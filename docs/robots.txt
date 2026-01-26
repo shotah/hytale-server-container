@@ -1,7 +1,7 @@
 # --------------------------------------------------
 # SITEMAP LOCATION (Critical for Discovery)
 # --------------------------------------------------
-Sitemap: https://deinfreu.github.io/hytale-server-container/sitemap.xml
+Sitemap: https://shotah.github.io/hytale-server-container/sitemap.xml
 
 # --------------------------------------------------
 # ALLOW GOOGLE AND COMMON BOTS

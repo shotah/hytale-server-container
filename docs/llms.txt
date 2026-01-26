@@ -7,7 +7,7 @@
   "applicationCategory": "GameApplication",
   "author": {
     "@type": "Person",
-    "name": "deinfreu"
+    "name": "shotah"
   },
   "description": "A high-performance Dockerized solution for running Hytale dedicated servers with ease."
 }
