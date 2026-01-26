@@ -42,4 +42,14 @@ if [ ! -f "$script_path" ]; then
 fi
 
 echo "Running: $script_path (detected: $distro -> $platform)"
-exec sh "$script_path"
+
+# Use bash for ubuntu scripts (they use bash features like pipefail)
+# Use sh for alpine scripts (more portable)
+case "$platform" in
+    ubuntu)
+        exec bash "$script_path"
+        ;;
+    *)
+        exec sh "$script_path"
+        ;;
+esac
