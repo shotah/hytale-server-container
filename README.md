@@ -144,7 +144,7 @@ These environment variables override settings in `config.json`:
 | `HYTALE_WHITELIST` | *(empty)* | Comma-separated player UUIDs to whitelist |
 | `HYTALE_OPS` | *(empty)* | Comma-separated player UUIDs to grant OP |
 
-See the [private-server example](examples/private-server/) for a complete whitelist + password configuration.
+Look up player UUIDs at [hytaleid.com](https://hytaleid.com/). See the [private-server example](examples/private-server/) for a complete whitelist + password configuration.
 
 ### Patchline & Mods
 
