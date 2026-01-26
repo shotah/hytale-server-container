@@ -1,6 +1,7 @@
-# Hytale Server with CurseForge Mod Support
-# 
-# No API key required! Just add mod IDs and go.
+# Hytale Server with CurseForge Mods
+#
+# Automatically downloads mods from CurseForge on startup.
+# No API key required!
 #
 # Setup:
 #   1. Find mod IDs from https://www.curseforge.com/hytale
@@ -9,17 +10,17 @@
 
 services:
   hytale:
-    image: deinfreu/hytale-server:experimental
+    image: shotah/hytale-server:alpine
     container_name: hytale-server-mods
     environment:
       SERVER_IP: "0.0.0.0"
       SERVER_PORT: "5520"
-      DEBUG: "TRUE"
       TZ: "UTC"
+      DEBUG: "TRUE"  # See mod download logs
       
       # CurseForge mod IDs (comma-separated)
       # Find IDs in the URL: curseforge.com/hytale/mods/mod-name/12345
-      CURSEFORGE_MOD_IDS: "12345,67890"
+      CURSEFORGE_MOD_IDS: "1423494,1430352"
       
     restart: unless-stopped
     ports:

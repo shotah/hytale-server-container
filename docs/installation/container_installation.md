@@ -16,15 +16,13 @@ docker run \
   --name hytale-server \
   -e SERVER_IP="0.0.0.0" \
   -e SERVER_PORT="5520" \
-  -e PROD="FALSE" \
-  -e DEBUG="FALSE" \
-  -e TZ="Europe/Amsterdam" \
+  -e TZ="UTC" \
   -p 5520:5520/udp \
   -v "hytale-server:/home/container" \
   -v "/etc/machine-id:/etc/machine-id:ro" \
   --restart unless-stopped \
   -t -i \
-  deinfreu/hytale-server:experimental
+  shotah/hytale-server:alpine
 ```
 
 ### Method B: Docker compose
@@ -44,14 +42,12 @@ docker run \
     ```yaml
     services:
       hytale:
-        image: deinfreu/hytale-server:experimental
+        image: shotah/hytale-server:alpine
         container_name: hytale-server
         environment:
           SERVER_IP: "0.0.0.0"
           SERVER_PORT: "5520"
-          PROD: "FALSE"
-          DEBUG: "FALSE"
-          TZ: "Europe/Amsterdam"
+          TZ: "UTC"
         restart: unless-stopped
         ports:
           - "5520:5520/udp"
@@ -61,6 +57,8 @@ docker run \
         tty: true
         stdin_open: true
     ```
+
+    For more configuration options, see the [examples folder](https://github.com/shotah/hytale-server-container/tree/main/examples).
 
 3.  Now get out of the nano text editor and save the file:
 

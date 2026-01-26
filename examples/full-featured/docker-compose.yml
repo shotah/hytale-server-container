@@ -1,0 +1,60 @@
+# Full-Featured Hytale Server
+#
+# Demonstrates all available environment variables and features.
+# Customize as needed for your server.
+
+services:
+  hytale:
+    image: shotah/hytale-server:alpine
+    container_name: hytale-server-full
+    environment:
+      # ===================
+      # Server Binding
+      # ===================
+      SERVER_IP: "0.0.0.0"
+      SERVER_PORT: "5520"
+      TZ: "America/New_York"
+      
+      # ===================
+      # Debug & Production
+      # ===================
+      DEBUG: "FALSE"      # Enable verbose logging
+      PROD: "FALSE"       # Enable production checks
+      
+      # ===================
+      # Server Configuration (config.json)
+      # ===================
+      HYTALE_SERVER_NAME: "My Awesome Server"
+      HYTALE_MOTD: "Welcome! Have fun!"
+      HYTALE_PASSWORD: ""           # Leave empty for public server
+      HYTALE_MAX_PLAYERS: "100"
+      HYTALE_MAX_VIEW_RADIUS: "32"
+      HYTALE_COMPRESSION: "false"
+      HYTALE_WORLD: "default"
+      HYTALE_GAMEMODE: "Adventure"  # Adventure, Creative, etc.
+      
+      # ===================
+      # Access Control
+      # ===================
+      HYTALE_WHITELIST_ENABLED: "false"
+      # HYTALE_WHITELIST: "uuid1,uuid2,uuid3"  # Comma-separated UUIDs
+      # HYTALE_OPS: "admin-uuid-here"          # Comma-separated UUIDs
+      
+      # ===================
+      # Patchline (Server Version)
+      # ===================
+      HYTALE_PATCHLINE: "release"   # "release" or "pre-release"
+      
+      # ===================
+      # CurseForge Mods
+      # ===================
+      # CURSEFORGE_MOD_IDS: "1423494,1430352"  # Comma-separated mod IDs
+      
+    restart: unless-stopped
+    ports:
+      - "5520:5520/udp"
+    volumes:
+      - ./data:/home/container
+      - /etc/machine-id:/etc/machine-id:ro
+    tty: true
+    stdin_open: true

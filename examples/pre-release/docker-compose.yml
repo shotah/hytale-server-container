@@ -1,0 +1,29 @@
+# Pre-Release Hytale Server
+#
+# Run the latest pre-release version of Hytale server.
+# Great for testing new features before they go live.
+
+services:
+  hytale:
+    image: shotah/hytale-server:alpine
+    container_name: hytale-server-prerelease
+    environment:
+      SERVER_IP: "0.0.0.0"
+      SERVER_PORT: "5520"
+      TZ: "UTC"
+      DEBUG: "TRUE"
+      
+      # Use pre-release server version
+      HYTALE_PATCHLINE: "pre-release"
+      
+      HYTALE_SERVER_NAME: "Pre-Release Test Server"
+      HYTALE_MOTD: "Testing the latest features!"
+      
+    restart: unless-stopped
+    ports:
+      - "5520:5520/udp"
+    volumes:
+      - ./data:/home/container
+      - /etc/machine-id:/etc/machine-id:ro
+    tty: true
+    stdin_open: true

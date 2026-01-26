@@ -1,18 +1,27 @@
+# Basic Hytale Server
+#
+# A simple configuration to get started quickly.
+# See other examples for advanced features.
+
 services:
-    hytale:
-        image: deinfreu/hytale-server:experimental
-        container_name: hytale-server
-        environment:
-            SERVER_IP: "0.0.0.0"
-            SERVER_PORT: "5520"
-            PROD: "FALSE"
-            DEBUG: "FALSE"
-            TZ: "Europe/Amsterdam"
-        restart: unless-stopped
-        ports:
-        - "5520:5520/udp"
-        volumes:
-        - ./data:/home/container
-        - /etc/machine-id:/etc/machine-id:ro
-        tty: true
-        stdin_open: true
+  hytale:
+    image: shotah/hytale-server:alpine
+    container_name: hytale-server
+    environment:
+      # Server binding
+      SERVER_IP: "0.0.0.0"
+      SERVER_PORT: "5520"
+      TZ: "UTC"
+      
+      # Debug/Production modes
+      PROD: "FALSE"
+      DEBUG: "FALSE"
+      
+    restart: unless-stopped
+    ports:
+      - "5520:5520/udp"
+    volumes:
+      - ./data:/home/container
+      - /etc/machine-id:/etc/machine-id:ro
+    tty: true
+    stdin_open: true
