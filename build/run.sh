@@ -42,4 +42,4 @@ if [ ! -f "$script_path" ]; then
 fi
 
 echo "Running: $script_path (detected: $distro -> $platform)"
-exec "$script_path"
+exec sh "$script_path"

@@ -72,13 +72,14 @@ ENV USER=container \
     DEBUG=FALSE
 
 # Install packages (platform-specific)
+# Use 'sh' to avoid needing execute permissions on mounted scripts
 COPY build/ /build-scripts/
 RUN --mount=target=/build-scripts,source=build \
-    /build-scripts/run.sh install-packages
+    sh /build-scripts/run.sh install-packages
 
 # Setup user (platform-specific)
 RUN --mount=target=/build-scripts,source=build \
-    /build-scripts/run.sh setup-user
+    sh /build-scripts/run.sh setup-user
 
 # Copy artifacts from builder
 COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader
