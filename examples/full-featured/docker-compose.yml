@@ -22,11 +22,14 @@ services:
       PROD: "FALSE"       # Enable production checks
       
       # ===================
-      # Memory Management
+      # Memory & JVM Performance
       # ===================
-      INIT_MEMORY: "4G"   # Initial heap size (-Xms)
-      MAX_MEMORY: "8G"    # Maximum heap size (-Xmx)
-      # JAVA_ARGS: ""     # Additional JVM args (advanced)
+      INIT_MEMORY: "4G"       # Initial heap size (-Xms)
+      MAX_MEMORY: "8G"        # Maximum heap size (-Xmx)
+      USE_G1GC: "TRUE"        # Hytale-recommended G1GC settings
+      # USE_AIKAR_FLAGS: "TRUE"  # Aggressive GC (experimental, from Minecraft)
+      HYTALE_CACHE: "TRUE"    # AOT cache for faster startup
+      # JAVA_ARGS: ""         # Additional JVM args (advanced)
       
       # ===================
       # Server Configuration (config.json)

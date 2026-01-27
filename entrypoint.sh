@@ -16,6 +16,8 @@ export TZ="${TZ:-UTC}"
 # Memory management - build JAVA_ARGS from friendly env vars
 export INIT_MEMORY="${INIT_MEMORY:-}"
 export MAX_MEMORY="${MAX_MEMORY:-}"
+export USE_G1GC="${USE_G1GC:-FALSE}"
+export USE_AIKAR_FLAGS="${USE_AIKAR_FLAGS:-FALSE}"
 export JAVA_ARGS="${JAVA_ARGS:-}"
 
 # Build memory arguments if INIT_MEMORY or MAX_MEMORY are set
@@ -26,8 +28,44 @@ fi
 if [ -n "$MAX_MEMORY" ]; then
     MEMORY_ARGS="$MEMORY_ARGS -Xmx$MAX_MEMORY"
 fi
-# Prepend memory args to JAVA_ARGS (user's JAVA_ARGS can override)
-export JAVA_ARGS="$MEMORY_ARGS $JAVA_ARGS"
+
+# JVM Garbage Collection flags
+# Two options: basic G1GC (Hytale-recommended) or full Aikar flags (experimental)
+GC_FLAGS=""
+if [ "$USE_AIKAR_FLAGS" = "TRUE" ]; then
+    # Full Aikar flags - aggressive G1GC tuning from Minecraft optimization
+    # https://docs.papermc.io/paper/aikars-flags
+    # Note: These were tuned for Minecraft, may need adjustment for Hytale
+    GC_FLAGS="-XX:+UseG1GC \
+-XX:+ParallelRefProcEnabled \
+-XX:MaxGCPauseMillis=200 \
+-XX:+UnlockExperimentalVMOptions \
+-XX:+DisableExplicitGC \
+-XX:+AlwaysPreTouch \
+-XX:G1NewSizePercent=30 \
+-XX:G1MaxNewSizePercent=40 \
+-XX:G1HeapRegionSize=8M \
+-XX:G1ReservePercent=20 \
+-XX:G1HeapWastePercent=5 \
+-XX:G1MixedGCCountTarget=4 \
+-XX:InitiatingHeapOccupancyPercent=15 \
+-XX:G1MixedGCLiveThresholdPercent=90 \
+-XX:G1RSetUpdatingPauseTimePercent=5 \
+-XX:SurvivorRatio=32 \
+-XX:+PerfDisableSharedMem \
+-XX:MaxTenuringThreshold=1 \
+-Dusing.aikars.flags=https://mcflags.emc.gs \
+-Daikars.new.flags=true"
+elif [ "$USE_G1GC" = "TRUE" ]; then
+    # Basic G1GC - Hytale-recommended conservative settings
+    # https://hytale-docs.pages.dev/server/performance/
+    GC_FLAGS="-XX:+UseG1GC \
+-XX:+ParallelRefProcEnabled \
+-XX:MaxGCPauseMillis=200"
+fi
+
+# Build final JAVA_ARGS: memory + gc + user args
+export JAVA_ARGS="$MEMORY_ARGS $GC_FLAGS $JAVA_ARGS"
 export BASE_DIR="/home/container"
 export GAME_DIR="$BASE_DIR/game"
 export SERVER_JAR_PATH="$GAME_DIR/Server/HytaleServer.jar"

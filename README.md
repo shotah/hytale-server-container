@@ -120,8 +120,11 @@ See the [curseforge-mods example](examples/curseforge-mods/) for a complete conf
 | `TZ` | `UTC` | Timezone for logs |
 | `DEBUG` | `FALSE` | Enable debug logging and security audits |
 | `PROD` | `FALSE` | Enable production mode checks |
-| `INIT_MEMORY` | *(empty)* | Initial Java heap size (e.g., `2G`, `512M`) |
-| `MAX_MEMORY` | *(empty)* | Maximum Java heap size (e.g., `4G`, `2048M`) |
+| `INIT_MEMORY` | *(empty)* | Initial Java heap size (e.g., `4G`) |
+| `MAX_MEMORY` | *(empty)* | Maximum Java heap size (e.g., `8G`) |
+| `USE_G1GC` | `FALSE` | Use G1GC with [Hytale-recommended settings](https://hytale-docs.pages.dev/server/performance/) |
+| `USE_AIKAR_FLAGS` | `FALSE` | Use [Aikar's aggressive GC tuning](https://docs.papermc.io/paper/aikars-flags) (experimental) |
+| `HYTALE_CACHE` | `FALSE` | Enable AOT cache for faster startup |
 | `JAVA_ARGS` | *(empty)* | Additional JVM arguments (advanced) |
 
 ### Hytale Server Config (`config.json`)

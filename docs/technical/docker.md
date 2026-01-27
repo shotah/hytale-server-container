@@ -18,19 +18,47 @@ The Hytale server container is highly configurable through environment variables
 | `SERVER_PORT`                 | The primary UDP port for game traffic                                                                   | `5520`     |
 | `SERVER_IP`                   | The IP address the server binds to                                                                      | `0.0.0.0`  |
 | `PROD`                        | Set to `TRUE` to run production readiness audits                                                        | `FALSE`    |
-| `INIT_MEMORY`                 | Initial Java heap size (e.g., `2G`, `512M`). Maps to `-Xms`.                                            | `(Empty)`  |
-| `MAX_MEMORY`                  | Maximum Java heap size (e.g., `4G`, `2048M`). Maps to `-Xmx`.                                           | `(Empty)`  |
+| `INIT_MEMORY`                 | Initial Java heap size (e.g., `4G`). Maps to `-Xms`.                                                    | `(Empty)`  |
+| `MAX_MEMORY`                  | Maximum Java heap size (e.g., `8G`). Maps to `-Xmx`.                                                    | `(Empty)`  |
+| `USE_G1GC`                    | Use G1GC with [Hytale-recommended settings](https://hytale-docs.pages.dev/server/performance/)          | `FALSE`    |
+| `USE_AIKAR_FLAGS`             | Use [Aikar's aggressive GC tuning](https://docs.papermc.io/paper/aikars-flags) (experimental)           | `FALSE`    |
+| `HYTALE_CACHE`                | Enable AOT (Ahead-of-Time) cache for faster server startup                                              | `FALSE`    |
 | `JAVA_ARGS`                   | Additional flags for the JVM (expert use only)                                                          | `(Empty)`  |
 
-### Memory Configuration Example
+### Memory & Performance Configuration
+
+**Recommended settings** (Hytale-optimized):
 
 ```yaml
 environment:
-  INIT_MEMORY: "4G"    # Start with 4GB heap
-  MAX_MEMORY: "8G"     # Allow up to 8GB heap
+  INIT_MEMORY: "4G"      # Start with 4GB heap
+  MAX_MEMORY: "8G"       # Allow up to 8GB heap
+  USE_G1GC: "TRUE"       # Hytale-recommended GC settings
+  HYTALE_CACHE: "TRUE"   # Faster startup with AOT cache
 ```
 
-This is equivalent to setting `JAVA_ARGS: "-Xms4G -Xmx8G"` but more readable.
+**Experimental settings** (adapted from Minecraft):
+
+```yaml
+environment:
+  INIT_MEMORY: "4G"
+  MAX_MEMORY: "8G"
+  USE_AIKAR_FLAGS: "TRUE"  # Aggressive GC tuning
+  HYTALE_CACHE: "TRUE"
+```
+
+### GC Options Explained
+
+| Option | Description | When to use |
+|--------|-------------|-------------|
+| `USE_G1GC` | Basic G1GC with conservative settings | **Recommended** - tested with Hytale |
+| `USE_AIKAR_FLAGS` | Aggressive G1GC tuning from Minecraft | Experimental - may improve or worsen performance |
+
+**Note:** `USE_AIKAR_FLAGS` was originally tuned for Minecraft's memory allocation patterns. Hytale may behave differently. Start with `USE_G1GC` and only try Aikar flags if you're experiencing GC-related lag.
+
+### AOT Cache
+
+The `HYTALE_CACHE` option enables Hytale's Ahead-of-Time compilation cache, which significantly reduces server startup time by loading pre-compiled code instead of waiting for JIT warmup.
 
 ---
 
