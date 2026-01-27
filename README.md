@@ -86,7 +86,7 @@ Run the latest pre-release version by setting `HYTALE_PATCHLINE`:
 
 ```yaml
 environment:
-  HYTALE_PATCHLINE: "pre-release"  # Options: "release" (default), "pre-release"
+  HYTALE_PATCHLINE: "prerelease"  # Options: "release" (default), "prerelease"
 ```
 
 See the [pre-release example](examples/pre-release/) for a complete configuration.
@@ -120,6 +120,9 @@ See the [curseforge-mods example](examples/curseforge-mods/) for a complete conf
 | `TZ` | `UTC` | Timezone for logs |
 | `DEBUG` | `FALSE` | Enable debug logging and security audits |
 | `PROD` | `FALSE` | Enable production mode checks |
+| `INIT_MEMORY` | *(empty)* | Initial Java heap size (e.g., `2G`, `512M`) |
+| `MAX_MEMORY` | *(empty)* | Maximum Java heap size (e.g., `4G`, `2048M`) |
+| `JAVA_ARGS` | *(empty)* | Additional JVM arguments (advanced) |
 
 ### Hytale Server Config (`config.json`)
 
@@ -150,7 +153,7 @@ Look up player UUIDs at [hytaleid.com](https://hytaleid.com/). See the [private-
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `HYTALE_PATCHLINE` | `release` | Server version: `release` or `pre-release` |
+| `HYTALE_PATCHLINE` | `release` | Server version: `release` or `prerelease` |
 | `CURSEFORGE_MOD_IDS` | *(empty)* | Comma-separated CurseForge mod project IDs |
 | `HYTALE_MOD_DIR` | `/home/container/mods` | Directory for mods |
 

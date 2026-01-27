@@ -18,7 +18,19 @@ The Hytale server container is highly configurable through environment variables
 | `SERVER_PORT`                 | The primary UDP port for game traffic                                                                   | `5520`     |
 | `SERVER_IP`                   | The IP address the server binds to                                                                      | `0.0.0.0`  |
 | `PROD`                        | Set to `TRUE` to run production readiness audits                                                        | `FALSE`    |
+| `INIT_MEMORY`                 | Initial Java heap size (e.g., `2G`, `512M`). Maps to `-Xms`.                                            | `(Empty)`  |
+| `MAX_MEMORY`                  | Maximum Java heap size (e.g., `4G`, `2048M`). Maps to `-Xmx`.                                           | `(Empty)`  |
 | `JAVA_ARGS`                   | Additional flags for the JVM (expert use only)                                                          | `(Empty)`  |
+
+### Memory Configuration Example
+
+```yaml
+environment:
+  INIT_MEMORY: "4G"    # Start with 4GB heap
+  MAX_MEMORY: "8G"     # Allow up to 8GB heap
+```
+
+This is equivalent to setting `JAVA_ARGS: "-Xms4G -Xmx8G"` but more readable.
 
 ---
 
@@ -26,7 +38,7 @@ The Hytale server container is highly configurable through environment variables
 
 | Variable                      | Description                                                                                             | Default    |
 |-------------------------------|---------------------------------------------------------------------------------------------------------|------------|
-| `HYTALE_PATCHLINE`            | Patchline to download from: `release` or `pre-release`                                                  | `release`  |
+| `HYTALE_PATCHLINE`            | Patchline to download from: `release` or `prerelease`                                                   | `release`  |
 
 See the [pre-release example](https://github.com/shotah/hytale-server-container/tree/main/examples/pre-release) for running a pre-release server.
 

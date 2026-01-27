@@ -22,6 +22,13 @@ services:
       PROD: "FALSE"       # Enable production checks
       
       # ===================
+      # Memory Management
+      # ===================
+      INIT_MEMORY: "4G"   # Initial heap size (-Xms)
+      MAX_MEMORY: "8G"    # Maximum heap size (-Xmx)
+      # JAVA_ARGS: ""     # Additional JVM args (advanced)
+      
+      # ===================
       # Server Configuration (config.json)
       # ===================
       HYTALE_SERVER_NAME: "My Awesome Server"
@@ -43,7 +50,7 @@ services:
       # ===================
       # Patchline (Server Version)
       # ===================
-      HYTALE_PATCHLINE: "release"   # "release" or "pre-release"
+      HYTALE_PATCHLINE: "release"   # "release" or "prerelease"
       
       # ===================
       # CurseForge Mods

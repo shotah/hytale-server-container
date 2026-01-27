@@ -13,8 +13,8 @@ services:
       TZ: "UTC"
       DEBUG: "TRUE"
       
-      # Use pre-release server version
-      HYTALE_PATCHLINE: "pre-release"
+      # Use prerelease server version
+      HYTALE_PATCHLINE: "prerelease"
       
       HYTALE_SERVER_NAME: "Pre-Release Test Server"
       HYTALE_MOTD: "Testing the latest features!"

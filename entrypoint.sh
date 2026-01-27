@@ -11,8 +11,23 @@ export SERVER_PORT="${SERVER_PORT:-5520}"
 export SERVER_IP="${SERVER_IP:-0.0.0.0}"
 export DEBUG="${DEBUG:-FALSE}"
 export PROD="${PROD:-FALSE}"
-export JAVA_ARGS="${JAVA_ARGS:-}"
 export TZ="${TZ:-UTC}"
+
+# Memory management - build JAVA_ARGS from friendly env vars
+export INIT_MEMORY="${INIT_MEMORY:-}"
+export MAX_MEMORY="${MAX_MEMORY:-}"
+export JAVA_ARGS="${JAVA_ARGS:-}"
+
+# Build memory arguments if INIT_MEMORY or MAX_MEMORY are set
+MEMORY_ARGS=""
+if [ -n "$INIT_MEMORY" ]; then
+    MEMORY_ARGS="$MEMORY_ARGS -Xms$INIT_MEMORY"
+fi
+if [ -n "$MAX_MEMORY" ]; then
+    MEMORY_ARGS="$MEMORY_ARGS -Xmx$MAX_MEMORY"
+fi
+# Prepend memory args to JAVA_ARGS (user's JAVA_ARGS can override)
+export JAVA_ARGS="$MEMORY_ARGS $JAVA_ARGS"
 export BASE_DIR="/home/container"
 export GAME_DIR="$BASE_DIR/game"
 export SERVER_JAR_PATH="$GAME_DIR/Server/HytaleServer.jar"

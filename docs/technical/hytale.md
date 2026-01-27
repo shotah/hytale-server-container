@@ -23,7 +23,7 @@ You can use the following commands:
 | hytale-downloader -print-version             | Show game version without downloading            |
 | hytale-downloader -version                   | Show hytale-downloader version                   |
 | hytale-downloader -check-update              | Check for hytale-downloader updates               |
-| hytale-downloader -patchline pre-release     | Download from pre-release channel                |
+| hytale-downloader -patchline prerelease      | Download from prerelease channel                 |
 | hytale-downloader -skip-update-check         | Skip automatic update check                      |
 
 ### Updating Hytale Server
