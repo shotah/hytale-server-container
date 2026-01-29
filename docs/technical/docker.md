@@ -66,7 +66,7 @@ The `HYTALE_CACHE` option enables Hytale's Ahead-of-Time compilation cache, whic
 
 | Variable                      | Description                                                                                             | Default    |
 |-------------------------------|---------------------------------------------------------------------------------------------------------|------------|
-| `HYTALE_PATCHLINE`            | Patchline to download from: `release` or `prerelease`                                                   | `release`  |
+| `HYTALE_PATCHLINE`            | Patchline to download from: `release` or `pre-release`                                                  | `release`  |
 
 See the [pre-release example](https://github.com/shotah/hytale-server-container/tree/main/examples/pre-release) for running a pre-release server.
 
@@ -168,6 +168,36 @@ These variables directly inject values into the `home/container/config.json` fil
 | `HYTALE_COMPRESSION` | Enable or disable local network compression. | `false` |
 | `HYTALE_WORLD` | The name of the world folder to load. | `default` |
 | `HYTALE_GAMEMODE` | The default game mode (e.g., Adventure, Creative). | `Adventure` |
+
+---
+
+## 🌍 World Settings (universe/worlds/{world}/config.json)
+
+These variables modify per-world settings. The world must exist first (run the server once to create it).
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `HYTALE_PVP_ENABLED` | Enable player vs player combat. | `false` |
+| `HYTALE_FALL_DAMAGE` | Enable fall damage. | `true` |
+| `HYTALE_NPC_SPAWNING` | Enable NPC and creature spawning. | `true` |
+| `HYTALE_WORLD_GAMEMODE` | World-specific game mode (overrides server default). | `Adventure` |
+| `HYTALE_DAYTIME_DURATION` | Daytime length in seconds. | `1728` |
+| `HYTALE_NIGHTTIME_DURATION` | Nighttime length in seconds. | `1151` |
+| `HYTALE_TIME_PAUSED` | Pause the day/night cycle. | `false` |
+
+### Example: PVP Arena World
+
+```yaml
+environment:
+  HYTALE_PVP_ENABLED: "true"
+  HYTALE_FALL_DAMAGE: "true"
+  HYTALE_NPC_SPAWNING: "false"   # No mobs in arena
+  HYTALE_TIME_PAUSED: "true"     # Always daytime
+```
+
+### Note on World Configuration
+
+World settings are applied to the world specified by `HYTALE_WORLD` (default: "default"). If the world doesn't exist yet, the settings will be applied on the next container restart after the world is created.
 
 ---
 

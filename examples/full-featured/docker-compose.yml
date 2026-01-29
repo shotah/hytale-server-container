@@ -53,12 +53,24 @@ services:
       # ===================
       # Patchline (Server Version)
       # ===================
-      HYTALE_PATCHLINE: "release"   # "release" or "prerelease"
+      HYTALE_PATCHLINE: "release"   # "release" or "pre-release"
       
       # ===================
       # CurseForge Mods
       # ===================
       # CURSEFORGE_MOD_IDS: "1423494,1430352"  # Comma-separated mod IDs
+      
+      # ===================
+      # World Settings (per-world config)
+      # Note: World must exist first (run server once)
+      # ===================
+      # HYTALE_PVP_ENABLED: "true"        # Enable PVP combat
+      # HYTALE_FALL_DAMAGE: "true"        # Enable fall damage
+      # HYTALE_NPC_SPAWNING: "true"       # Enable NPC/mob spawning
+      # HYTALE_WORLD_GAMEMODE: "Adventure" # World-specific game mode
+      # HYTALE_DAYTIME_DURATION: "1728"   # Day length in seconds
+      # HYTALE_NIGHTTIME_DURATION: "1151" # Night length in seconds
+      # HYTALE_TIME_PAUSED: "false"       # Freeze day/night cycle
       
     restart: unless-stopped
     ports:

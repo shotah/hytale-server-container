@@ -86,7 +86,7 @@ Run the latest pre-release version by setting `HYTALE_PATCHLINE`:
 
 ```yaml
 environment:
-  HYTALE_PATCHLINE: "prerelease"  # Options: "release" (default), "prerelease"
+  HYTALE_PATCHLINE: "pre-release"  # Options: "release" (default), "pre-release"
 ```
 
 See the [pre-release example](examples/pre-release/) for a complete configuration.
@@ -142,6 +142,20 @@ These environment variables override settings in `config.json`:
 | `HYTALE_WORLD` | `default` | Default world name |
 | `HYTALE_GAMEMODE` | `Adventure` | Default game mode |
 
+### World Settings (`universe/worlds/{world}/config.json`)
+
+These environment variables modify per-world settings (requires world to exist first):
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HYTALE_PVP_ENABLED` | `false` | Enable player vs player combat |
+| `HYTALE_FALL_DAMAGE` | `true` | Enable fall damage |
+| `HYTALE_NPC_SPAWNING` | `true` | Enable NPC/creature spawning |
+| `HYTALE_WORLD_GAMEMODE` | `Adventure` | World game mode (overrides server default) |
+| `HYTALE_DAYTIME_DURATION` | `1728` | Daytime length in seconds |
+| `HYTALE_NIGHTTIME_DURATION` | `1151` | Nighttime length in seconds |
+| `HYTALE_TIME_PAUSED` | `false` | Pause the day/night cycle |
+
 ### Access Control
 
 | Variable | Default | Description |
@@ -156,7 +170,7 @@ Look up player UUIDs at [hytaleid.com](https://hytaleid.com/). See the [private-
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `HYTALE_PATCHLINE` | `release` | Server version: `release` or `prerelease` |
+| `HYTALE_PATCHLINE` | `release` | Server version: `release` or `pre-release` |
 | `CURSEFORGE_MOD_IDS` | *(empty)* | Comma-separated CurseForge mod project IDs |
 | `HYTALE_MOD_DIR` | `/home/container/mods` | Directory for mods |
 

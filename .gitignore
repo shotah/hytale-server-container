@@ -114,3 +114,4 @@ out/
 # ----------------------
 data
 files_to_not_commit/
+config.json
