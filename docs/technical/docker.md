@@ -24,6 +24,10 @@ The Hytale server container is highly configurable through environment variables
 | `USE_AIKAR_FLAGS`             | Use [Aikar's aggressive GC tuning](https://docs.papermc.io/paper/aikars-flags) (experimental)           | `FALSE`    |
 | `HYTALE_CACHE`                | Enable AOT (Ahead-of-Time) cache for faster server startup                                              | `FALSE`    |
 | `JAVA_ARGS`                   | Additional flags for the JVM (expert use only)                                                          | `(Empty)`  |
+| `ENABLE_AUTO_RESTART`         | Auto-restart the server on a schedule to check for updates                                              | `FALSE`    |
+| `AUTO_RESTART_INTERVAL`       | Hours between auto-restarts (requires `ENABLE_AUTO_RESTART=TRUE`)                                       | `24`       |
+| `ENABLE_PERFORMANCE_SAVER`    | Install bundled [Nitrado PerformanceSaver](https://github.com/nitrado/hytale-plugin-performance-saver) plugin | `FALSE`    |
+| `ENABLE_SERVER_BRIDGE`        | Install bundled ServerBridge plugin for bidirectional IPC between scripts and server                   | `FALSE`    |
 
 ### Memory & Performance Configuration
 
@@ -59,6 +63,106 @@ environment:
 ### AOT Cache
 
 The `HYTALE_CACHE` option enables Hytale's Ahead-of-Time compilation cache, which significantly reduces server startup time by loading pre-compiled code instead of waiting for JIT warmup.
+
+### Auto-Restart
+
+The container checks for server updates on every startup. For pre-release servers where the game client auto-updates frequently, enable auto-restart to keep your server in sync:
+
+```yaml
+environment:
+  ENABLE_AUTO_RESTART: "TRUE"
+  AUTO_RESTART_INTERVAL: "6"  # Check every 6 hours
+restart: unless-stopped        # Required! Docker must restart the container
+```
+
+**How it works:**
+1. A background watchdog starts alongside the server
+2. After the configured interval, it sends SIGTERM for a graceful shutdown
+3. Docker's restart policy brings the container back up
+4. The downloader checks for updates and installs if available
+5. Server starts with the latest version
+
+**Important:** You must set `restart: unless-stopped` (or `restart: always`) in your Docker Compose file, otherwise the container will just stop and not come back.
+
+### Performance Saver Plugin
+
+The container bundles the **[Nitrado PerformanceSaver](https://github.com/nitrado/hytale-plugin-performance-saver)** plugin (MIT licensed), which optimizes server resource usage:
+
+```yaml
+environment:
+  ENABLE_PERFORMANCE_SAVER: "TRUE"
+```
+
+**What it does:**
+- **TPS limiting** - Caps TPS at 20 when players are online, drops to 5 when empty (after 5 min idle)
+- **Dynamic view radius** - Automatically reduces view distance under CPU or memory pressure, recovers when stable
+- **GC optimization** - Triggers garbage collection when chunk unloading frees significant memory
+- **Crash recovery** - Restores TPS and view radius after unexpected shutdowns
+
+**Plugin configuration** (`mods/Nitrado_PerformanceSaver/config.json`, auto-created on first run):
+
+| Section | Key Settings | Default |
+| :--- | :--- | :--- |
+| `Tps` | `TpsLimit` / `TpsLimitEmpty` / `EmptyLimitDelaySeconds` | `20` / `5` / `300` |
+| `ViewRadius` | `MinViewRadius` / `DecreaseFactor` / `RecoveryWaitTimeSeconds` | `2` / `0.75` / `60` |
+| `ChunkGarbageCollection` | `ChunkDropRatioThreshold` / `GarbageCollectionDelaySeconds` | `0.8` / `300` |
+
+See the [full configuration reference](https://github.com/nitrado/hytale-plugin-performance-saver#configuration) for all options.
+
+### ServerBridge Plugin
+
+The container includes a custom **ServerBridge** plugin that provides bidirectional file-based IPC between the Java server and container shell scripts.
+
+```yaml
+environment:
+  ENABLE_SERVER_BRIDGE: "TRUE"
+```
+
+**What it does:**
+
+- **Status reporting** - Writes `server-status.json` every 5 seconds with player count, uptime, max players, view radius, and world list
+- **Command execution** - Polls `server-commands.json` every second for commands written by shell scripts (broadcasts, kick_all)
+- **Auto-restart integration** - Automatically enabled when `ENABLE_AUTO_RESTART=TRUE` so restart countdowns are broadcast to players
+
+**How it works:**
+
+The plugin creates two files in the server's working directory:
+
+| File | Direction | Purpose |
+| :--- | :--- | :--- |
+| `server-status.json` | Plugin → Scripts | Server state (player count, uptime, worlds) |
+| `server-commands.json` | Scripts → Plugin | Commands to execute (broadcast, kick_all) |
+
+**Sending commands from shell scripts:**
+
+```bash
+# Broadcast a message to all online players
+echo '{"command": "broadcast", "message": "Server restarting in 5 minutes!"}' > server-commands.json
+
+# Kick all players with a reason
+echo '{"command": "kick_all", "message": "Server shutting down for maintenance."}' > server-commands.json
+```
+
+**Reading server status from shell scripts:**
+
+```bash
+# Check if players are online
+PLAYERS=$(grep -o '"players_online": *[0-9]*' server-status.json | grep -o '[0-9]*$')
+if [ "$PLAYERS" -gt 0 ]; then
+    echo "Server has $PLAYERS players online"
+fi
+```
+
+**Plugin configuration** (`ServerBridge/config.properties`, auto-created on first run):
+
+| Property | Description | Default |
+| :--- | :--- | :--- |
+| `statusEnabled` | Write status file | `true` |
+| `commandsEnabled` | Poll for commands | `true` |
+| `statusIntervalSeconds` | Seconds between status writes | `5` |
+| `commandPollSeconds` | Seconds between command polls | `1` |
+| `statusFile` | Status file name | `server-status.json` |
+| `commandsFile` | Commands file name | `server-commands.json` |
 
 ---
 
@@ -180,10 +284,17 @@ These variables modify per-world settings. The world must exist first (run the s
 | `HYTALE_PVP_ENABLED` | Enable player vs player combat. | `false` |
 | `HYTALE_FALL_DAMAGE` | Enable fall damage. | `true` |
 | `HYTALE_NPC_SPAWNING` | Enable NPC and creature spawning. | `true` |
+| `HYTALE_NPC_FROZEN` | Freeze all NPCs in place. | `false` |
 | `HYTALE_WORLD_GAMEMODE` | World-specific game mode (overrides server default). | `Adventure` |
 | `HYTALE_DAYTIME_DURATION` | Daytime length in seconds. | `1728` |
 | `HYTALE_NIGHTTIME_DURATION` | Nighttime length in seconds. | `1151` |
 | `HYTALE_TIME_PAUSED` | Pause the day/night cycle. | `false` |
+| `HYTALE_SPAWN_MARKERS` | Enable spawn point markers on the map. | `true` |
+| `HYTALE_COMPASS_UPDATING` | Enable compass updating. | `true` |
+| `HYTALE_OBJECTIVE_MARKERS` | Enable objective markers on the map. | `true` |
+| `HYTALE_SAVING_PLAYERS` | Save player data to disk. Disable for temporary/event worlds. | `true` |
+| `HYTALE_SAVING_CHUNKS` | Save chunk data to disk. Disable for temporary/event worlds. | `true` |
+| `HYTALE_UNLOADING_CHUNKS` | Unload inactive chunks from memory. Disable to keep all chunks loaded. | `true` |
 
 ### Example: PVP Arena World
 
@@ -191,8 +302,11 @@ These variables modify per-world settings. The world must exist first (run the s
 environment:
   HYTALE_PVP_ENABLED: "true"
   HYTALE_FALL_DAMAGE: "true"
-  HYTALE_NPC_SPAWNING: "false"   # No mobs in arena
-  HYTALE_TIME_PAUSED: "true"     # Always daytime
+  HYTALE_NPC_SPAWNING: "false"      # No mobs in arena
+  HYTALE_NPC_FROZEN: "true"         # Freeze any remaining NPCs
+  HYTALE_TIME_PAUSED: "true"        # Always daytime
+  HYTALE_SAVING_PLAYERS: "false"    # Don't persist arena stats
+  HYTALE_UNLOADING_CHUNKS: "false"  # Keep arena loaded
 ```
 
 ### Note on World Configuration

@@ -1,0 +1,5 @@
+com/shotah/hytale/plugins/serverbridge/CommandWatcher$Command.class
+com/shotah/hytale/plugins/serverbridge/ServerBridgeConfig.class
+com/shotah/hytale/plugins/serverbridge/ServerBridgePlugin.class
+com/shotah/hytale/plugins/serverbridge/StatusReporter.class
+com/shotah/hytale/plugins/serverbridge/CommandWatcher.class

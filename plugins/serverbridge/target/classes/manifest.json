@@ -1,0 +1,15 @@
+{
+    "Group": "Shotah",
+    "Name": "ServerBridge",
+    "Version": "1.0.0",
+    "Description": "Bidirectional file-based IPC between the Hytale server and container shell scripts.",
+    "Authors": [
+        {
+            "Name": "shotah",
+            "Url": "https://github.com/shotah"
+        }
+    ],
+    "Website": "https://github.com/shotah/hytale-server-container",
+    "Main": "com.shotah.hytale.plugins.serverbridge.ServerBridgePlugin",
+    "ServerVersion": "*"
+}

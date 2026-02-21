@@ -1,0 +1,3 @@
+/plugin/src/test/java/com/shotah/hytale/plugins/serverbridge/CommandWatcherTest.java
+/plugin/src/test/java/com/shotah/hytale/plugins/serverbridge/ManifestTest.java
+/plugin/src/test/java/com/shotah/hytale/plugins/serverbridge/ServerBridgeConfigTest.java

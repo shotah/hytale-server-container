@@ -115,6 +115,16 @@ export HYTALE_VALIDATE_WORLD_GEN="${HYTALE_VALIDATE_WORLD_GEN:-FALSE}"
 export HYTALE_VERSION="${HYTALE_VERSION:-FALSE}"
 export HYTALE_WORLD_GEN="${HYTALE_WORLD_GEN:-}"
 
+# --- Auto-Restart (for keeping up with pre-release updates) ---
+export ENABLE_AUTO_RESTART="${ENABLE_AUTO_RESTART:-FALSE}"
+export AUTO_RESTART_INTERVAL="${AUTO_RESTART_INTERVAL:-24}"
+
+# --- Performance Saver Plugin (reduce resources when server is empty/under pressure) ---
+export ENABLE_PERFORMANCE_SAVER="${ENABLE_PERFORMANCE_SAVER:-FALSE}"
+
+# --- ServerBridge Plugin (file-based IPC: status reporting + command execution) ---
+export ENABLE_SERVER_BRIDGE="${ENABLE_SERVER_BRIDGE:-FALSE}"
+
 # --- CurseForge Mod Downloader (no API key required!) ---
 export CURSEFORGE_MOD_IDS="${CURSEFORGE_MOD_IDS:-}"
 export HYTALE_MOD_DIR="${HYTALE_MOD_DIR:-$BASE_DIR/mods}"
@@ -137,6 +147,30 @@ fi
 # CRITICAL ORDER: Downloader must run BEFORE config management. The audit suite must run AFTER this step.
 sh "$SCRIPTS_PATH/hytale/hytale_downloader.sh"
 sh "$SCRIPTS_PATH/hytale/curseforge_mods.sh"
+
+# Install bundled Nitrado PerformanceSaver plugin if enabled
+if [ "$ENABLE_PERFORMANCE_SAVER" = "TRUE" ]; then
+    log_step "Performance Saver Plugin"
+    mkdir -p "$BASE_DIR/mods"
+    if [ -f /usr/local/lib/plugins/performance-saver.jar ]; then
+        cp /usr/local/lib/plugins/performance-saver.jar "$BASE_DIR/mods/"
+        printf "${GREEN}installed${NC}\n"
+    else
+        printf "${YELLOW}JAR not found in image${NC}\n"
+    fi
+fi
+
+# Install ServerBridge plugin if enabled (or if auto-restart needs it)
+if [ "$ENABLE_SERVER_BRIDGE" = "TRUE" ] || [ "$ENABLE_AUTO_RESTART" = "TRUE" ]; then
+    log_step "ServerBridge Plugin"
+    mkdir -p "$BASE_DIR/mods"
+    if [ -f /usr/local/lib/plugins/serverbridge.jar ]; then
+        cp /usr/local/lib/plugins/serverbridge.jar "$BASE_DIR/mods/"
+        printf "${GREEN}installed${NC}\n"
+    else
+        printf "${YELLOW}JAR not found in image${NC}\n"
+    fi
+fi
 sh "$SCRIPTS_PATH/hytale/hytale_config.sh"
 sh "$SCRIPTS_PATH/hytale/hytale_permissions.sh"
 sh "$SCRIPTS_PATH/hytale/hytale_world_config.sh"
@@ -164,7 +198,16 @@ log_step "Finalizing Environment"
 cd "$BASE_DIR"
 log_success
 
-# --- 4. Execution ---
+# --- 4. Auto-Restart Watchdog ---
+log_step "Auto-Restart"
+if [ "$ENABLE_AUTO_RESTART" = "TRUE" ]; then
+    printf "${GREEN}enabled${NC} (every %sh)\n" "$AUTO_RESTART_INTERVAL"
+    sh "$SCRIPTS_PATH/hytale/auto_restart.sh" &
+else
+    printf "${DIM}disabled${NC}\n"
+fi
+
+# --- 5. Execution ---
 printf "\n${BOLD}${CYAN}🚀 Launching Hytale Server...${NC}\n\n"
 
 # Determine if we need to switch users

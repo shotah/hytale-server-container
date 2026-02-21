@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.shotah.hytale.plugins.serverbridge.ServerBridgeConfigTest
+-------------------------------------------------------------------------------
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.100 s -- in com.shotah.hytale.plugins.serverbridge.ServerBridgeConfigTest

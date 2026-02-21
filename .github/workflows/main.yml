@@ -17,8 +17,24 @@ on:
   workflow_dispatch:
 
 jobs:
+  plugin-tests:
+    name: "☕ ServerBridge Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run plugin unit tests
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/plugins/serverbridge:/plugin" \
+            -w /plugin \
+            maven:3.9-eclipse-temurin-25 \
+            mvn test
+
   build:
     name: "🐳 Build & Test (${{ matrix.variant }})"
+    needs: plugin-tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -151,12 +167,16 @@ jobs:
   # Summary job that depends on all build jobs
   summary:
     name: "📊 Build Summary"
-    needs: build
+    needs: [plugin-tests, build]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Check build results
         run: |
+          if [ "${{ needs.plugin-tests.result }}" = "failure" ]; then
+            echo "❌ Plugin tests failed"
+            exit 1
+          fi
           if [ "${{ needs.build.result }}" = "failure" ]; then
             echo "❌ One or more builds failed"
             exit 1

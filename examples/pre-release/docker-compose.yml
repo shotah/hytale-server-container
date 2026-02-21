@@ -2,6 +2,10 @@
 #
 # Run the latest pre-release version of Hytale server.
 # Great for testing new features before they go live.
+#
+# Auto-restart keeps the server in sync with client updates.
+# The container restarts every 6 hours, checks for a new version,
+# and only re-downloads if one is available.
 
 services:
   hytale:
@@ -16,10 +20,14 @@ services:
       # Use pre-release server version
       HYTALE_PATCHLINE: "pre-release"
       
+      # Auto-restart to keep up with frequent pre-release updates
+      ENABLE_AUTO_RESTART: "TRUE"
+      AUTO_RESTART_INTERVAL: "6"   # Check every 6 hours
+      
       HYTALE_SERVER_NAME: "Pre-Release Test Server"
       HYTALE_MOTD: "Testing the latest features!"
       
-    restart: unless-stopped
+    restart: unless-stopped  # Required for auto-restart to work
     ports:
       - "5520:5520/udp"
     volumes:

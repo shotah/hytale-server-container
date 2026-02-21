@@ -103,10 +103,17 @@ has_world_config_vars() {
     [ -n "${HYTALE_PVP_ENABLED:-}" ] || \
     [ -n "${HYTALE_FALL_DAMAGE:-}" ] || \
     [ -n "${HYTALE_NPC_SPAWNING:-}" ] || \
+    [ -n "${HYTALE_NPC_FROZEN:-}" ] || \
     [ -n "${HYTALE_WORLD_GAMEMODE:-}" ] || \
     [ -n "${HYTALE_DAYTIME_DURATION:-}" ] || \
     [ -n "${HYTALE_NIGHTTIME_DURATION:-}" ] || \
-    [ -n "${HYTALE_TIME_PAUSED:-}" ]
+    [ -n "${HYTALE_TIME_PAUSED:-}" ] || \
+    [ -n "${HYTALE_SPAWN_MARKERS:-}" ] || \
+    [ -n "${HYTALE_COMPASS_UPDATING:-}" ] || \
+    [ -n "${HYTALE_OBJECTIVE_MARKERS:-}" ] || \
+    [ -n "${HYTALE_SAVING_PLAYERS:-}" ] || \
+    [ -n "${HYTALE_SAVING_CHUNKS:-}" ] || \
+    [ -n "${HYTALE_UNLOADING_CHUNKS:-}" ]
 }
 
 # Skip if no world config vars are set
@@ -135,13 +142,20 @@ printf "${GREEN}$WORLD_NAME${NC}\n"
 # Apply environment variable overrides
 log_step "Applying world overrides"
 
-apply_env ".IsPvpEnabled"           "${HYTALE_PVP_ENABLED:-}"        "boolean"
-apply_env ".IsFallDamageEnabled"    "${HYTALE_FALL_DAMAGE:-}"        "boolean"
-apply_env ".IsSpawningNPC"          "${HYTALE_NPC_SPAWNING:-}"       "boolean"
-apply_env ".GameMode"               "${HYTALE_WORLD_GAMEMODE:-}"     "string"
-apply_env ".DaytimeDurationSeconds" "${HYTALE_DAYTIME_DURATION:-}"   "number"
-apply_env ".NighttimeDurationSeconds" "${HYTALE_NIGHTTIME_DURATION:-}" "number"
-apply_env ".IsGameTimePaused"       "${HYTALE_TIME_PAUSED:-}"        "boolean"
+apply_env ".IsPvpEnabled"              "${HYTALE_PVP_ENABLED:-}"        "boolean"
+apply_env ".IsFallDamageEnabled"       "${HYTALE_FALL_DAMAGE:-}"        "boolean"
+apply_env ".IsSpawningNPC"             "${HYTALE_NPC_SPAWNING:-}"       "boolean"
+apply_env ".IsAllNPCFrozen"            "${HYTALE_NPC_FROZEN:-}"         "boolean"
+apply_env ".GameMode"                  "${HYTALE_WORLD_GAMEMODE:-}"     "string"
+apply_env ".DaytimeDurationSeconds"    "${HYTALE_DAYTIME_DURATION:-}"   "number"
+apply_env ".NighttimeDurationSeconds"  "${HYTALE_NIGHTTIME_DURATION:-}" "number"
+apply_env ".IsGameTimePaused"          "${HYTALE_TIME_PAUSED:-}"        "boolean"
+apply_env ".IsSpawnMarkersEnabled"     "${HYTALE_SPAWN_MARKERS:-}"      "boolean"
+apply_env ".IsCompassUpdating"         "${HYTALE_COMPASS_UPDATING:-}"   "boolean"
+apply_env ".IsObjectiveMarkersEnabled" "${HYTALE_OBJECTIVE_MARKERS:-}"  "boolean"
+apply_env ".IsSavingPlayers"           "${HYTALE_SAVING_PLAYERS:-}"     "boolean"
+apply_env ".IsSavingChunks"            "${HYTALE_SAVING_CHUNKS:-}"      "boolean"
+apply_env ".IsUnloadingChunks"         "${HYTALE_UNLOADING_CHUNKS:-}"   "boolean"
 
 log_success
 
@@ -172,6 +186,14 @@ else
     printf "${DIM}disabled${NC}\n"
 fi
 
+log_step "NPC Frozen"
+FROZEN=$(jq -r '.IsAllNPCFrozen' "$WORLD_CONFIG" 2>/dev/null || echo "false")
+if [ "$FROZEN" = "true" ]; then
+    printf "${YELLOW}frozen${NC}\n"
+else
+    printf "${DIM}normal${NC}\n"
+fi
+
 log_step "World Game Mode"
 GAMEMODE=$(jq -r '.GameMode' "$WORLD_CONFIG" 2>/dev/null || echo "Adventure")
 printf "${GREEN}%s${NC}\n" "$GAMEMODE"
@@ -188,3 +210,33 @@ if [ "$PAUSED" = "true" ]; then
 else
     printf "${DIM}running${NC}\n"
 fi
+
+log_step "Spawn Markers"
+SPAWN=$(jq -r '.IsSpawnMarkersEnabled' "$WORLD_CONFIG" 2>/dev/null || echo "true")
+if [ "$SPAWN" = "true" ]; then
+    printf "${GREEN}enabled${NC}\n"
+else
+    printf "${DIM}disabled${NC}\n"
+fi
+
+log_step "Compass"
+COMPASS=$(jq -r '.IsCompassUpdating' "$WORLD_CONFIG" 2>/dev/null || echo "true")
+if [ "$COMPASS" = "true" ]; then
+    printf "${GREEN}updating${NC}\n"
+else
+    printf "${DIM}static${NC}\n"
+fi
+
+log_step "Objective Markers"
+OBJECTIVES=$(jq -r '.IsObjectiveMarkersEnabled' "$WORLD_CONFIG" 2>/dev/null || echo "true")
+if [ "$OBJECTIVES" = "true" ]; then
+    printf "${GREEN}enabled${NC}\n"
+else
+    printf "${DIM}disabled${NC}\n"
+fi
+
+log_step "Persistence"
+SAVE_P=$(jq -r '.IsSavingPlayers' "$WORLD_CONFIG" 2>/dev/null || echo "true")
+SAVE_C=$(jq -r '.IsSavingChunks' "$WORLD_CONFIG" 2>/dev/null || echo "true")
+UNLOAD=$(jq -r '.IsUnloadingChunks' "$WORLD_CONFIG" 2>/dev/null || echo "true")
+printf "players: ${GREEN}%s${NC}, chunks: ${GREEN}%s${NC}, unload: ${GREEN}%s${NC}\n" "$SAVE_P" "$SAVE_C" "$UNLOAD"

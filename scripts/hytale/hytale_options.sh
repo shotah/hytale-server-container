@@ -53,11 +53,15 @@ else
     printf "${DIM}disabled${NC}\n"
 fi
 
-# Allow OP
+# Allow OP - auto-enable when HYTALE_OPS is set
 log_step "Allow OP"
-if [ "${HYTALE_ALLOW_OP:-}" = "TRUE" ]; then
+if [ "${HYTALE_ALLOW_OP:-}" = "TRUE" ] || [ -n "${HYTALE_OPS:-}" ]; then
     export HYTALE_ALLOW_OP_OPT="--allow-op"
-    printf "${GREEN}enabled${NC}\n"
+    if [ -n "${HYTALE_OPS:-}" ] && [ "${HYTALE_ALLOW_OP:-}" != "TRUE" ]; then
+        printf "${GREEN}enabled${NC} (auto: HYTALE_OPS is set)\n"
+    else
+        printf "${GREEN}enabled${NC}\n"
+    fi
 else
     printf "${DIM}disabled${NC}\n"
 fi

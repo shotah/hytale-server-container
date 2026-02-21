@@ -1,0 +1,4 @@
+/plugin/src/main/java/com/shotah/hytale/plugins/serverbridge/CommandWatcher.java
+/plugin/src/main/java/com/shotah/hytale/plugins/serverbridge/ServerBridgeConfig.java
+/plugin/src/main/java/com/shotah/hytale/plugins/serverbridge/ServerBridgePlugin.java
+/plugin/src/main/java/com/shotah/hytale/plugins/serverbridge/StatusReporter.java

@@ -56,6 +56,22 @@ services:
       HYTALE_PATCHLINE: "release"   # "release" or "pre-release"
       
       # ===================
+      # Auto-Restart (for pre-release update tracking)
+      # ===================
+      # ENABLE_AUTO_RESTART: "TRUE"    # Restart on a schedule to check for updates
+      # AUTO_RESTART_INTERVAL: "6"     # Hours between restarts (default: 24)
+      
+      # ===================
+      # Performance Saver (reduce resources when empty/under pressure)
+      # ===================
+      # ENABLE_PERFORMANCE_SAVER: "TRUE"  # Install Nitrado PerformanceSaver plugin
+      
+      # ===================
+      # ServerBridge (bidirectional IPC: status + broadcast commands)
+      # ===================
+      # ENABLE_SERVER_BRIDGE: "TRUE"  # Auto-enabled when ENABLE_AUTO_RESTART is set
+      
+      # ===================
       # CurseForge Mods
       # ===================
       # CURSEFORGE_MOD_IDS: "1423494,1430352"  # Comma-separated mod IDs
@@ -64,13 +80,20 @@ services:
       # World Settings (per-world config)
       # Note: World must exist first (run server once)
       # ===================
-      # HYTALE_PVP_ENABLED: "true"        # Enable PVP combat
-      # HYTALE_FALL_DAMAGE: "true"        # Enable fall damage
-      # HYTALE_NPC_SPAWNING: "true"       # Enable NPC/mob spawning
-      # HYTALE_WORLD_GAMEMODE: "Adventure" # World-specific game mode
-      # HYTALE_DAYTIME_DURATION: "1728"   # Day length in seconds
-      # HYTALE_NIGHTTIME_DURATION: "1151" # Night length in seconds
-      # HYTALE_TIME_PAUSED: "false"       # Freeze day/night cycle
+      # HYTALE_PVP_ENABLED: "true"          # Enable PVP combat
+      # HYTALE_FALL_DAMAGE: "true"          # Enable fall damage
+      # HYTALE_NPC_SPAWNING: "true"         # Enable NPC/mob spawning
+      # HYTALE_NPC_FROZEN: "false"          # Freeze all NPCs in place
+      # HYTALE_WORLD_GAMEMODE: "Adventure"  # World-specific game mode
+      # HYTALE_DAYTIME_DURATION: "1728"     # Day length in seconds
+      # HYTALE_NIGHTTIME_DURATION: "1151"   # Night length in seconds
+      # HYTALE_TIME_PAUSED: "false"         # Freeze day/night cycle
+      # HYTALE_SPAWN_MARKERS: "true"        # Show spawn point markers
+      # HYTALE_COMPASS_UPDATING: "true"     # Enable compass updates
+      # HYTALE_OBJECTIVE_MARKERS: "true"    # Show objective markers
+      # HYTALE_SAVING_PLAYERS: "true"       # Save player data
+      # HYTALE_SAVING_CHUNKS: "true"        # Save chunk data
+      # HYTALE_UNLOADING_CHUNKS: "true"     # Unload inactive chunks
       
     restart: unless-stopped
     ports:

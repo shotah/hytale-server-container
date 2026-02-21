@@ -126,6 +126,10 @@ See the [curseforge-mods example](examples/curseforge-mods/) for a complete conf
 | `USE_AIKAR_FLAGS` | `FALSE` | Use [Aikar's aggressive GC tuning](https://docs.papermc.io/paper/aikars-flags) (experimental) |
 | `HYTALE_CACHE` | `FALSE` | Enable AOT cache for faster startup |
 | `JAVA_ARGS` | *(empty)* | Additional JVM arguments (advanced) |
+| `ENABLE_AUTO_RESTART` | `FALSE` | Auto-restart the server on a schedule to check for updates |
+| `AUTO_RESTART_INTERVAL` | `24` | Hours between auto-restarts (requires `ENABLE_AUTO_RESTART`) |
+| `ENABLE_PERFORMANCE_SAVER` | `FALSE` | Install [Nitrado PerformanceSaver](https://github.com/nitrado/hytale-plugin-performance-saver) plugin (TPS limiting, dynamic view radius, GC optimization) |
+| `ENABLE_SERVER_BRIDGE` | `FALSE` | Install ServerBridge plugin for bidirectional IPC (status reporting, in-game broadcasts from scripts) |
 
 ### Hytale Server Config (`config.json`)
 
@@ -151,10 +155,17 @@ These environment variables modify per-world settings (requires world to exist f
 | `HYTALE_PVP_ENABLED` | `false` | Enable player vs player combat |
 | `HYTALE_FALL_DAMAGE` | `true` | Enable fall damage |
 | `HYTALE_NPC_SPAWNING` | `true` | Enable NPC/creature spawning |
+| `HYTALE_NPC_FROZEN` | `false` | Freeze all NPCs in place |
 | `HYTALE_WORLD_GAMEMODE` | `Adventure` | World game mode (overrides server default) |
 | `HYTALE_DAYTIME_DURATION` | `1728` | Daytime length in seconds |
 | `HYTALE_NIGHTTIME_DURATION` | `1151` | Nighttime length in seconds |
 | `HYTALE_TIME_PAUSED` | `false` | Pause the day/night cycle |
+| `HYTALE_SPAWN_MARKERS` | `true` | Enable spawn point markers |
+| `HYTALE_COMPASS_UPDATING` | `true` | Enable compass updating |
+| `HYTALE_OBJECTIVE_MARKERS` | `true` | Enable objective markers |
+| `HYTALE_SAVING_PLAYERS` | `true` | Save player data to disk |
+| `HYTALE_SAVING_CHUNKS` | `true` | Save chunk data to disk |
+| `HYTALE_UNLOADING_CHUNKS` | `true` | Unload inactive chunks from memory |
 
 ### Access Control
 
@@ -243,11 +254,16 @@ This project is a fork of the excellent work by **[deinfreu](https://github.com/
 
 Thank you to deinfreu and all the [original contributors](https://github.com/deinfreu/hytale-server-container/graphs/contributors) for building the foundation of this container.
 
+This container bundles the **[Nitrado PerformanceSaver](https://github.com/nitrado/hytale-plugin-performance-saver)** plugin (MIT license, Copyright 2025 marbis GmbH). Thank you to the Nitrado team for maintaining it.
+
 ### What's New in This Fork
 
 - Pre-release server support (`HYTALE_PATCHLINE`)
 - CurseForge mod downloading (`CURSEFORGE_MOD_IDS`)
 - Server config via environment variables (`HYTALE_SERVER_NAME`, `HYTALE_PASSWORD`, etc.)
 - Whitelist and permissions management (`HYTALE_WHITELIST`, `HYTALE_OPS`)
+- Bundled [Nitrado PerformanceSaver](https://github.com/nitrado/hytale-plugin-performance-saver) plugin (`ENABLE_PERFORMANCE_SAVER`)
+- ServerBridge plugin for bidirectional script-to-server IPC (`ENABLE_SERVER_BRIDGE`)
+- Auto-restart with graceful player notifications (`ENABLE_AUTO_RESTART`)
 - Version tracking with automatic updates
 - Ready-to-use [examples](examples/) for common setups

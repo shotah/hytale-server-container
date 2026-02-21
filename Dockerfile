@@ -13,7 +13,13 @@
 # Global ARG must be declared before any FROM to be available in later stages
 ARG BASE_IMAGE=eclipse-temurin:25-jre-alpine
 
-# --- STAGE 1: Builder (always Alpine for consistency) ---
+# --- STAGE 1: ServerBridge Plugin Builder ---
+FROM maven:3.9-eclipse-temurin-25 AS plugin-builder
+WORKDIR /plugin
+COPY plugins/serverbridge/ .
+RUN mvn package -q -DskipTests
+
+# --- STAGE 2: Builder (always Alpine for consistency) ---
 FROM alpine:3.21 AS builder
 
 RUN apk add --no-cache curl unzip dos2unix
@@ -27,6 +33,15 @@ RUN curl -fsSL -o hytale.zip https://downloader.hytale.com/hytale-downloader.zip
     chmod +x ./hytale-downloader && \
     rm -rf hytale hytale.zip
 
+# Download latest Nitrado PerformanceSaver plugin (MIT licensed)
+# https://github.com/nitrado/hytale-plugin-performance-saver
+RUN PERF_REPO="nitrado/hytale-plugin-performance-saver" && \
+    PERF_VER=$(curl -fsSI "https://github.com/${PERF_REPO}/releases/latest" \
+        | grep -i ^location | sed 's|.*/v||' | tr -d '\r\n') && \
+    echo "Downloading PerformanceSaver v${PERF_VER}" && \
+    curl -fsSL -o performance-saver.jar \
+        "https://github.com/${PERF_REPO}/releases/download/v${PERF_VER}/nitrado-performance-saver-${PERF_VER}.jar"
+
 # Prepare scripts (fix line endings and permissions)
 COPY scripts/ ./scripts/
 COPY entrypoint.sh .
@@ -36,6 +51,7 @@ RUN find scripts -type f -name "*.sh" -exec dos2unix {} + && \
     chmod +x entrypoint.sh
 
 # --- STAGE 2: Final Runtime ---
+
 ARG BASE_IMAGE=eclipse-temurin:25-jre-alpine
 FROM ${BASE_IMAGE}
 
@@ -85,6 +101,10 @@ RUN --mount=target=/build-scripts,source=build \
 COPY --from=builder --chown=root:root /build/hytale-downloader /usr/local/bin/hytale-downloader
 COPY --from=builder --chown=${USER}:${USER} /build/scripts/ /usr/local/bin/scripts/
 COPY --from=builder --chown=${USER}:${USER} /build/entrypoint.sh /entrypoint.sh
+
+# Copy bundled plugins (staged, copied to mods/ at runtime when enabled)
+COPY --from=builder /build/performance-saver.jar /usr/local/lib/plugins/performance-saver.jar
+COPY --from=plugin-builder /plugin/target/serverbridge-*.jar /usr/local/lib/plugins/serverbridge.jar
 
 # Image metadata file
 RUN printf "buildtime=%s\nversion=%s\nrevision=%s\n" "${BUILDTIME}" "${VERSION}" "${REVISION}" > /etc/image.properties

@@ -1,0 +1,15 @@
+{
+    "Group": "Shotah",
+    "Name": "AutoSleep",
+    "Version": "1.0.0",
+    "Description": "Auto-sleep plugin that reduces server resource usage when no players are online.",
+    "Authors": [
+        {
+            "Name": "shotah",
+            "Url": "https://github.com/shotah"
+        }
+    ],
+    "Website": "https://github.com/shotah/hytale-server-container",
+    "Main": "com.shotah.hytale.plugins.autosleep.AutoSleepPlugin",
+    "ServerVersion": "*"
+}

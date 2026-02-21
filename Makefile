@@ -27,8 +27,7 @@ ROOT_DIR := $(CURDIR)
 # CurseForge testing
 CURSEFORGE_MOD_IDS ?= 1423494,1430352
 
-.PHONY: help build build-alpine build-ubuntu build-liberica run run-mods stop logs shell clean test login push push-alpine push-ubuntu push-liberica push-all push-readme
-
+.PHONY: help
 help:
 	@echo "Hytale Server Container - Development Commands"
 	@echo ""
@@ -37,13 +36,16 @@ help:
 	@echo "  make build-alpine   - Build Alpine image"
 	@echo "  make build-ubuntu   - Build Ubuntu image"
 	@echo "  make build-liberica - Build Alpine Liberica image"
+	@echo "  make build-plugin   - Build ServerBridge plugin JAR"
 	@echo "  make run            - Run the server (offline mode)"
 	@echo "  make run-mods       - Run with CurseForge mods"
 	@echo "  make test           - Run all tests"
+	@echo "  make test-plugin    - Run ServerBridge plugin JUnit tests"
 	@echo "  make stop           - Stop the running container"
 	@echo "  make logs           - View container logs"
 	@echo "  make shell          - Open a shell in the container"
 	@echo "  make clean          - Remove container and image"
+	@echo "  make clean-plugin   - Remove plugin build artifacts"
 	@echo ""
 	@echo "Docker Hub Publishing:"
 	@echo "  make login          - Login to Docker Hub"
@@ -60,25 +62,61 @@ help:
 
 # --- Build targets (using unified Dockerfile) ---
 
+.PHONY: build
 build: build-alpine
 
+.PHONY: build-alpine
 build-alpine:
 	docker build -t $(IMAGE_NAME):alpine \
 		--build-arg BASE_IMAGE=$(BASE_IMAGE_ALPINE) \
 		-f Dockerfile .
 
+.PHONY: build-ubuntu
 build-ubuntu:
 	docker build -t $(IMAGE_NAME):ubuntu \
 		--build-arg BASE_IMAGE=$(BASE_IMAGE_UBUNTU) \
 		-f Dockerfile .
 
+.PHONY: build-liberica
 build-liberica:
 	docker build -t $(IMAGE_NAME):liberica \
 		--build-arg BASE_IMAGE=$(BASE_IMAGE_LIBERICA) \
 		-f Dockerfile .
 
+# --- ServerBridge plugin build targets ---
+
+.PHONY: build-plugin
+build-plugin:
+	@echo "=== Building ServerBridge plugin ==="
+	docker run --rm \
+		-v "$(ROOT_DIR)/plugins/serverbridge:/plugin" \
+		-w /plugin \
+		maven:3.9-eclipse-temurin-25 \
+		mvn package -q -DskipTests
+	@echo "Plugin JAR built: plugins/serverbridge/target/"
+
+.PHONY: test-plugin
+test-plugin:
+	@echo "=== Running ServerBridge plugin tests ==="
+	docker run --rm \
+		-v "$(ROOT_DIR)/plugins/serverbridge:/plugin" \
+		-w /plugin \
+		maven:3.9-eclipse-temurin-25 \
+		mvn test
+	@echo "=== All plugin tests passed ==="
+
+.PHONY: clean-plugin
+clean-plugin:
+	docker run --rm \
+		-v "$(ROOT_DIR)/plugins/serverbridge:/plugin" \
+		-w /plugin \
+		maven:3.9-eclipse-temurin-25 \
+		mvn clean -q
+	@echo "Plugin build artifacts cleaned"
+
 # --- Run targets ---
 
+.PHONY: run
 run: build-alpine
 	@echo "Creating data directory: $(DATA_DIR)"
 	-@mkdir -p $(DATA_DIR)
@@ -93,6 +131,7 @@ run: build-alpine
 		-v "$(ROOT_DIR)/$(DATA_DIR):/home/container" \
 		$(IMAGE_NAME):alpine
 
+.PHONY: run-mods
 run-mods: build-alpine
 	-@mkdir -p $(DATA_DIR)
 	docker run -it --rm \
@@ -107,6 +146,7 @@ run-mods: build-alpine
 		-v "$(ROOT_DIR)/$(DATA_DIR):/home/container" \
 		$(IMAGE_NAME):alpine
 
+.PHONY: run-detached
 run-detached: build-alpine
 	-@mkdir -p $(DATA_DIR)
 	docker run -d \
@@ -123,6 +163,7 @@ run-detached: build-alpine
 # --- Test targets ---
 # Tests run directly via Docker - no bash required on host
 
+.PHONY: test
 test: build-alpine
 	@echo "=== Running tests for alpine ==="
 	@echo "1. Basic structure test..."
@@ -169,6 +210,7 @@ test: build-alpine
 		fi'
 	@echo "=== All tests passed ==="
 
+.PHONY: test-all
 test-all: build-alpine build-ubuntu build-liberica
 	@echo "=== Running tests for all variants ==="
 	docker run --rm --entrypoint /bin/sh $(IMAGE_NAME):alpine -c "test -x /usr/local/bin/hytale-downloader && echo 'Alpine: OK'"
@@ -177,16 +219,20 @@ test-all: build-alpine build-ubuntu build-liberica
 
 # --- Utility targets ---
 
+.PHONY: stop
 stop:
 	docker stop $(CONTAINER_NAME) 2>/dev/null || true
 	docker rm $(CONTAINER_NAME) 2>/dev/null || true
 
+.PHONY: logs
 logs:
 	docker logs -f $(CONTAINER_NAME)
 
+.PHONY: shell
 shell:
 	docker exec -it $(CONTAINER_NAME) /bin/sh
 
+.PHONY: clean
 clean: stop
 	docker rmi $(IMAGE_NAME):alpine 2>/dev/null || true
 	docker rmi $(IMAGE_NAME):ubuntu 2>/dev/null || true
@@ -195,11 +241,14 @@ clean: stop
 
 # --- Docker Hub Publishing ---
 
+.PHONY: login
 login:
 	docker login
 
+.PHONY: push
 push: push-alpine
 
+.PHONY: push-alpine
 push-alpine:
 	docker build -t $(DOCKERHUB_REPO):alpine -t $(DOCKERHUB_REPO):latest \
 		--build-arg BASE_IMAGE=$(BASE_IMAGE_ALPINE) \
@@ -211,6 +260,7 @@ push-alpine:
 		docker push $(DOCKERHUB_REPO):$(VERSION); \
 	fi
 
+.PHONY: push-ubuntu
 push-ubuntu:
 	docker build -t $(DOCKERHUB_REPO):ubuntu \
 		--build-arg BASE_IMAGE=$(BASE_IMAGE_UBUNTU) \
@@ -221,6 +271,7 @@ push-ubuntu:
 		docker push $(DOCKERHUB_REPO):$(VERSION)-ubuntu; \
 	fi
 
+.PHONY: push-liberica
 push-liberica:
 	docker build -t $(DOCKERHUB_REPO):liberica \
 		--build-arg BASE_IMAGE=$(BASE_IMAGE_LIBERICA) \
@@ -231,10 +282,12 @@ push-liberica:
 		docker push $(DOCKERHUB_REPO):$(VERSION)-liberica; \
 	fi
 
+.PHONY: push-all
 push-all: push-alpine push-ubuntu push-liberica
 	@echo "All images pushed to $(DOCKERHUB_REPO)"
 
 # Update Docker Hub description from README
+.PHONY: push-readme
 push-readme:
 	@if [ -z "$(DOCKERHUB_TOKEN)" ]; then \
 		echo "ERROR: Set DOCKERHUB_TOKEN (from hub.docker.com/settings/security)"; \
